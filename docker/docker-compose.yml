@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  todolist:
+    image: todolist:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        endpoint: "${END_POINT}"  # Pega o valor de uma variável de ambiente
+    networks:
+      - todolist
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - todolist
+    depends_on:
+      - todolist
+
+networks:
+  todolist:
+    driver: bridge
+

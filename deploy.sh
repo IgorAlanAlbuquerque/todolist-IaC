@@ -2,6 +2,7 @@
 
 # Executar o Terraform para criar a instância EC2
 echo "Iniciando o Terraform..."
+cd terraform
 terraform init
 terraform apply -auto-approve
 
@@ -16,11 +17,14 @@ fi
 ec2_ip=$(terraform output -raw ec2_public_ip)
 rds_endpoint=$(terraform output -raw rds_endpoint)
 
+cd ..
+cd ansible
+
 rm -f ./hosts.ini
 
 # Atualizar o arquivo hosts.ini com o IP público correto
 echo "[ec2]" > ./hosts.ini
-echo "$ec2_ip ansible_user=ubuntu ansible_ssh_private_key_file=labsuser.pem ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> ./hosts.ini
+echo "$ec2_ip ansible_user=ubuntu ansible_python_interpreter=/usr/bin/python3 ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> ./hosts.ini
 
 # Executar o Ansible Playbook usando o arquivo hosts.ini gerado pelo Terraform
 echo "Executando o Ansible Playbook..."
