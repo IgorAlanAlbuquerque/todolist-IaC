@@ -1,0 +1,46 @@
+---
+- hosts: ec2
+  remote_user: ubuntu
+  become: true
+  gather_facts: false  # Desativa a coleta de fatos no início
+
+  tasks:
+    - name: Atualizar pacotes e instalar dependências do Python e Ansible
+      raw: |
+        sudo apt-get update -y
+        sudo apt-get install -y python3 python3-pip python3-venv python3-apt python-is-python3 python3-six ansible
+
+    - name: Adicionar a chave GPG do Docker via raw
+      raw: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+    - name: Adicionar repositório Docker via raw
+      raw: |
+        sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+    - name: Instalar Docker via raw
+      raw: sudo apt-get install -y docker-ce
+
+    - name: Adicionar o usuário ubuntu ao grupo docker via raw
+      raw: sudo usermod -aG docker ubuntu
+
+    - name: Clonar o repositorio
+      raw: |
+        git clone https://github.com/joaomarceloalencar/devops
+
+    - name: Criar o Dockerfile para a aplicação via raw
+      raw: |
+        cat <<EOT >> /home/ubuntu/devops/Laboratorios/01_Flask/Dockerfile
+        FROM python:3.9-slim
+        WORKDIR /app
+        RUN pip install --no-cache-dir -r python3-venv python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools nginx
+        COPY . .
+        EXPOSE 8000
+        ENV END_POINT=\${rds_endpoint}
+        CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:8000", "wsgi:app", "--timeout", "0"]
+        EOT
+
+    - name: Construir e rodar a aplicação Docker via raw
+      raw: |
+        cd /home/ubuntu/devops/Laboratorios/01_Flask
+        docker build -t todolist-app .
+        docker run -d -p 80:8000 -e END_POINT="{{ rds_endpint }}" todolist-app

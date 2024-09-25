@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name _;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/todolist/devops/Laboratorios/01_Flask/todolist.sock;
+    }
+}
