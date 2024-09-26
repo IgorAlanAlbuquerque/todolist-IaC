@@ -2,6 +2,9 @@ FROM python:3.10-alpine
 
 WORKDIR /app
 
+# Instalar dependências necessárias para compilar o psycopg2
+RUN apk add --no-cache gcc musl-dev postgresql-dev
+
 COPY todolist/requirements.txt requirements.txt
 
 # Define o argumento chamado endpoint

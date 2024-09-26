@@ -2,3 +2,5 @@ wheel
 gunicorn
 Flask
 Flask-SQLAlchemy
+psycopg2
+
