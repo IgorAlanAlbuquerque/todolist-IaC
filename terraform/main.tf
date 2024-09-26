@@ -14,9 +14,9 @@ provider "aws" {
 }
 
 # Cria um Security Group para a instância EC2 (permite SSH e HTTP)
-resource "aws_security_group" "allow_ssh_http" {
-  name        = "allow_ssh_http"
-  description = "Permitir SSH e HTTP"
+resource "aws_security_group" "allow_ssh_http_todolist" {
+  name        = "allow_ssh_http_todolist"
+  description = "Permitir SSH e HTTP para todolist"
 
   ingress {
     from_port   = 22
@@ -47,10 +47,11 @@ resource "aws_instance" "my_ec2_instance" {
 
   # Referência para a chave SSH e o Security Group
   key_name      = "vockey"
-  vpc_security_group_ids = [aws_security_group.allow_ssh_http.id]
+  vpc_security_group_ids = [aws_security_group.allow_ssh_http_todolist.id]
+  user_data_base64 = base64encode(file("user_data.sh"))
 
   tags = {
-    Name = "todolist"  # Nome da instância
+    Name = "todolist_app"  # Nome da instância
   }
 
   # Pausa de 30 segundos para garantir que a instância está pronta
@@ -64,19 +65,19 @@ resource "aws_db_instance" "my_postgresql" {
   allocated_storage    = 20
   storage_type         = "gp2"
   engine               = "postgres"
-  engine_version       = "13.4"
-  instance_class       = "db.t2.micro"
-  name                 = "todolist_db"
-  username             = "admin"
+  engine_version       = "15.4"
+  instance_class       = "db.t3.medium"
+  db_name              = "todolist_db"
+  username             = "db_admin"
   password             = "password123"
   publicly_accessible  = true
   skip_final_snapshot  = true
 
   # VPC Security Group para o RDS (mesmo Security Group usado pela instância EC2)
-  vpc_security_group_ids = [aws_security_group.allow_ssh_http.id]
+  vpc_security_group_ids = [aws_security_group.allow_ssh_http_todolist.id]
 
   tags = {
-    Name = "todolist"
+    Name = "todolist_db"
   }
 }
 

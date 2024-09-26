@@ -5,7 +5,7 @@ services:
     image: todolist:latest
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: ./Dockerfile
       args:
         endpoint: "${END_POINT}"  # Pega o valor de uma variável de ambiente
     networks:
