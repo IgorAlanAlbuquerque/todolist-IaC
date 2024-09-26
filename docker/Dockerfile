@@ -8,7 +8,9 @@ COPY todolist/requirements.txt requirements.txt
 ARG END_POINT
 
 # Define a variável de ambiente com o valor do argumento
-ENV END_POINT=$END_POINT
+ENV END_POINT=${END_POINT}
+
+RUN echo "Valor de endpoint é: $END_POINT"
 
 RUN pip install -r requirements.txt
 

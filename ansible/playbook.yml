@@ -5,6 +5,7 @@
 
   vars:
     ansible_python_interpreter: /usr/bin/python3
+    rds_endpoint: "valor_do_rds_endpoint"
 
   tasks:
     - name: Adicionar a chave GPG do Docker
@@ -13,44 +14,53 @@
         state: present
 
     - name: Adicionar repositório Docker
-      apt_repository:
-        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_facts['lsb']['codename'] }} stable"
         state: present
 
+    - name: Atualizar pacotes apt
+      ansible.builtin.apt:
+        update_cache: yes
+
     - name: Instalar Docker
-      apt:
+      ansible.builtin.apt:
         name: docker-ce
         state: present
 
+    - name: Instalar Docker Compose V2
+      ansible.builtin.apt:
+        name: docker-compose-plugin
+        state: present
+
     - name: Adicionar o usuário ubuntu ao grupo docker
-      user:
+      ansible.builtin.user:
         name: ubuntu
         groups: docker
         append: yes
 
     - name: Verificar se o diretório do repositório existe
-      stat:
+      ansible.builtin.stat:
         path: /home/ubuntu/todolist-IaaC
       register: repo_directory
 
     - name: Clonar o repositório caso não exista
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/IgorAlanAlbuquerque/todolist-IaaC.git'
         dest: '/home/ubuntu/todolist-IaaC'
         version: main
       when: not repo_directory.stat.exists
 
     - name: Atualizar o repositório existente com git pull
-      command: git pull origin main
-      args:
-        chdir: /home/ubuntu/todolist-IaaC
+      ansible.builtin.git:
+        repo: 'https://github.com/IgorAlanAlbuquerque/todolist-IaaC.git'
+        dest: '/home/ubuntu/todolist-IaaC'
+        version: main
+        update: yes
       when: repo_directory.stat.exists
 
-    - name: Definir a variável de ambiente END_POINT
+    - name: Fazer deploy da aplicação com Docker Compose V2
+      community.docker.docker_compose_v2:
+        project_src: /home/ubuntu/todolist-IaaC/docker/
+        state: present
       environment:
         END_POINT: "{{ rds_endpoint }}"
-
-    - name: Fazer deploy da aplicação com Docker Compose
-      shell: "docker compose up -d"
-      args:
-        chdir: /home/ubuntu/todolist-IaaC/docker/

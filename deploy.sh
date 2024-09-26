@@ -16,7 +16,7 @@ fi
 
 ec2_ip=$(terraform output -raw ec2_public_ip)
 rds_endpoint=$(terraform output -raw rds_endpoint)
-echo "RDS Endpoint: $rds_endpoint"
+
 cd ..
 cd ansible
 
