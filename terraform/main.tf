@@ -32,6 +32,14 @@ resource "aws_security_group" "allow_ssh_http_todolist" {
     cidr_blocks = ["0.0.0.0/0"]  # Permitir HTTP de qualquer IP
   }
 
+  ingress {
+    description      = "Permitir tráfego interno"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    self             = true
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
