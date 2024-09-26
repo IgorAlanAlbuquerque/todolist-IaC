@@ -66,8 +66,26 @@
       ignore_errors: yes  # Ignorar erro se a rede já existir
 
     - name: Fazer deploy da aplicação com Docker Compose V2
-      community.docker.docker_compose_v2:
-        project_src: /home/ubuntu/todolist-IaC/docker/
-        state: present
-      environment:
-        END_POINT: "{{ rds_endpoint }}"
+      hosts: servidor
+      tasks:
+        - name: Fazer deploy da aplicação com Docker Compose V2
+          community.docker.docker_compose_v2:
+            project_src: /home/ubuntu/todolist-IaC/docker/
+            state: present
+          environment:
+            END_POINT: "{{ rds_endpoint }}"
+
+        - name: Verificar se o contêiner todolist está em execução
+          community.docker.docker_container_info:
+            name: docker-todolist-1
+          register: todolist_info
+          ignore_errors: yes
+
+        - name: Dar start no contêiner todolist se ele não estiver rodando
+          ansible.builtin.shell: docker start docker-todolist-1
+          when: todolist_info.state.Status != 'running'
+
+        - name: Verificar o status do contêiner todolist
+          ansible.builtin.debug:
+            msg: "O contêiner todolist está rodando com sucesso."
+          when: todolist_info.state.Status == 'running'
