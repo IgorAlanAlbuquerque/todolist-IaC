@@ -7,7 +7,7 @@ app = Flask(__name__, template_folder='templates')
 # Ler a variável de ambiente para o endpoint do RDS
 rds_endpoint = os.getenv("END_POINT")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg2://db_admin:password123@{rds_endpoint}:5432/todolist_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql+psycopg2://db_admin:password123@{rds_endpoint}/todolist_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar a conexão com o banco de dados

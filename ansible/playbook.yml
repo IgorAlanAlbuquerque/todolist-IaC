@@ -63,9 +63,15 @@
         driver: bridge
       ignore_errors: yes  # Ignorar erro se a rede já existir
 
+    - name: Definir variável de ambiente permanentemente
+      lineinfile:
+        path: /home/ubuntu/.bashrc  # ou você pode usar /etc/environment se for para todos os usuários
+        line: 'export END_POINT="{{ rds_endpoint }}"'
+        create: yes
+      become: yes
+
     - name: Definir variável de ambiente e executar Docker compose up
       raw: |
         cd /home/ubuntu/todolist-IaC/docker/ && \
-        export END_POINT="{{ rds_endpoint }}" && \
         docker compose up -d && \
         docker compose up -d
