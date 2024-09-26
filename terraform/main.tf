@@ -33,7 +33,7 @@ resource "aws_security_group" "allow_ssh_http_todolist" {
   }
 
   ingress {
-    description      = "Permitir tráfego interno"
+    description      = "Permitir trafego interno"
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
