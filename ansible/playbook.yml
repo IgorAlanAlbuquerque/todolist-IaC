@@ -46,8 +46,10 @@
         chdir: /home/ubuntu/todolist-IaaC
       when: repo_directory.stat.exists
 
-    - name: Fazer deploy da aplicacao com Docker Compose
-      shell: "END_POINT={{ rds_endpoint }} docker compose up -d"
+    - name: Definir a variável de ambiente END_POINT
+      shell: "export END_POINT={{ rds_endpoint }}"
+
+    - name: Fazer deploy da aplicação com Docker Compose
+      shell: "docker compose up -d"
       args:
         chdir: /home/ubuntu/todolist-IaaC/docker/
-

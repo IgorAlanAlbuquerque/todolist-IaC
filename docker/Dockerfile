@@ -5,10 +5,10 @@ WORKDIR /app
 COPY todolist/requirements.txt requirements.txt
 
 # Define o argumento chamado endpoint
-ARG endpoint
+ARG END_POINT
 
 # Define a variável de ambiente com o valor do argumento
-ENV END_POINT=$endpoint
+ENV END_POINT=$END_POINT
 
 RUN pip install -r requirements.txt
 
