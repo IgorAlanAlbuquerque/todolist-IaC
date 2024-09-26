@@ -40,28 +40,28 @@
 
     - name: Verificar se o diretório do repositório existe
       ansible.builtin.stat:
-        path: /home/ubuntu/todolist-IaaC
+        path: /home/ubuntu/todolist-IaC
       register: repo_directory
 
     - name: Clonar o repositório caso não exista
       ansible.builtin.git:
         repo: 'https://github.com/IgorAlanAlbuquerque/todolist-IaaC.git'
-        dest: '/home/ubuntu/todolist-IaaC'
+        dest: '/home/ubuntu/todolist-IaC'
         version: main
       when: not repo_directory.stat.exists
 
     - name: Atualizar o repositório existente com git pull
       ansible.builtin.git:
         repo: 'https://github.com/IgorAlanAlbuquerque/todolist-IaaC.git'
-        dest: '/home/ubuntu/todolist-IaaC'
+        dest: '/home/ubuntu/todolist-IaC'
         version: main
         update: yes
       when: repo_directory.stat.exists
 
     - name: Fazer deploy da aplicação com Docker Compose V2
       community.docker.docker_compose_v2:
-        project_src: /home/ubuntu/todolist-IaaC/docker/
+        project_src: /home/ubuntu/todolist-IaC/docker/
         state: present
-        detached: true  # Especifica que deve rodar em modo detached
+        command: up -d
       environment:
         END_POINT: "{{ rds_endpoint }}"
