@@ -5,7 +5,6 @@
 
   vars:
     ansible_python_interpreter: /usr/bin/python3
-    rds_endpoint: "valor_do_rds_endpoint"
 
   tasks:
     - name: Adicionar a chave GPG do Docker
@@ -45,30 +44,18 @@
 
     - name: Clonar o repositório caso não exista
       ansible.builtin.git:
-        repo: 'https://github.com/IgorAlanAlbuquerque/todolist-IaaC.git'
+        repo: 'https://github.com/IgorAlanAlbuquerque/todolist-IaC.git'
         dest: '/home/ubuntu/todolist-IaC'
         version: main
       when: not repo_directory.stat.exists
 
     - name: Atualizar o repositório existente com git pull
       ansible.builtin.git:
-        repo: 'https://github.com/IgorAlanAlbuquerque/todolist-IaaC.git'
+        repo: 'https://github.com/IgorAlanAlbuquerque/todolist-IaC.git'
         dest: '/home/ubuntu/todolist-IaC'
         version: main
         update: yes
       when: repo_directory.stat.exists
-
-    # Criar a variável de ambiente END_POINT com o valor de rds_endpoint
-    - name: Criar variável de ambiente END_POINT no .bashrc
-      ansible.builtin.lineinfile:
-        path: /home/ubuntu/.bashrc
-        line: 'export END_POINT="{{ rds_endpoint }}"'
-        create: yes
-
-    - name: Recarregar variáveis de ambiente
-      ansible.builtin.shell: source /home/ubuntu/.bashrc
-      args:
-        executable: /bin/bash
 
     # Criar rede todolist_net
     - name: Criar rede Docker 'todolist_net'
@@ -77,25 +64,10 @@
         driver: bridge
       ignore_errors: yes  # Ignorar erro se a rede já existir
 
+    # Fazer deploy da aplicação com Docker Compose V2
     - name: Fazer deploy da aplicação com Docker Compose V2
-      hosts: servidor
-      tasks:
-        - name: Fazer deploy da aplicação com Docker Compose V2
-          community.docker.docker_compose_v2:
-            project_src: /home/ubuntu/todolist-IaC/docker/
-            state: present
-
-        - name: Verificar se o contêiner todolist está em execução
-          community.docker.docker_container_info:
-            name: docker-todolist-1
-          register: todolist_info
-          ignore_errors: yes
-
-        - name: Dar start no contêiner todolist se ele não estiver rodando
-          ansible.builtin.shell: docker start docker-todolist-1
-          when: todolist_info.state.Status != 'running'
-
-        - name: Verificar o status do contêiner todolist
-          ansible.builtin.debug:
-            msg: "O contêiner todolist está rodando com sucesso."
-          when: todolist_info.state.Status == 'running'
+      community.docker.docker_compose_v2:
+        project_src: /home/ubuntu/todolist-IaC/docker/
+        state: present
+      environment:
+          END_POINT: "{{ rds_endpoint }}"
