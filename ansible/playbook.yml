@@ -58,6 +58,18 @@
         update: yes
       when: repo_directory.stat.exists
 
+    # Criar a variável de ambiente END_POINT com o valor de rds_endpoint
+    - name: Criar variável de ambiente END_POINT no .bashrc
+      ansible.builtin.lineinfile:
+        path: /home/ubuntu/.bashrc
+        line: 'export END_POINT="{{ rds_endpoint }}"'
+        create: yes
+
+    - name: Recarregar variáveis de ambiente
+      ansible.builtin.shell: source /home/ubuntu/.bashrc
+      args:
+        executable: /bin/bash
+
     # Criar rede todolist_net
     - name: Criar rede Docker 'todolist_net'
       community.docker.docker_network:
@@ -72,8 +84,6 @@
           community.docker.docker_compose_v2:
             project_src: /home/ubuntu/todolist-IaC/docker/
             state: present
-          environment:
-            END_POINT: "{{ rds_endpoint }}"
 
         - name: Verificar se o contêiner todolist está em execução
           community.docker.docker_container_info:
