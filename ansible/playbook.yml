@@ -58,6 +58,13 @@
         update: yes
       when: repo_directory.stat.exists
 
+    # Criar rede todolist_net
+    - name: Criar rede Docker 'todolist_net'
+      community.docker.docker_network:
+        name: todolist_net
+        driver: bridge
+      ignore_errors: yes  # Ignorar erro se a rede já existir
+
     - name: Fazer deploy da aplicação com Docker Compose V2
       community.docker.docker_compose_v2:
         project_src: /home/ubuntu/todolist-IaC/docker/

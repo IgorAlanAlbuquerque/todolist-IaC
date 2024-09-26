@@ -8,10 +8,10 @@ RUN apk add --no-cache gcc musl-dev postgresql-dev
 COPY todolist/requirements.txt requirements.txt
 
 # Define o argumento chamado endpoint
-ARG END_POINT
+ARG endpoint
 
 # Define a variável de ambiente com o valor do argumento
-ENV END_POINT=${END_POINT}
+ENV END_POINT=$endpoint
 
 RUN pip install -r requirements.txt
 

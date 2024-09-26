@@ -9,7 +9,7 @@ services:
     ports:
       - "8000:8000"  # Expõe a porta 8000 do serviço todolist
     networks:
-      - todolist
+      - todolist_net
 
   nginx:
     image: nginx:latest
@@ -18,11 +18,11 @@ services:
     volumes:
       - ./default.conf:/etc/nginx/conf.d/default.conf
     networks:
-      - todolist
+      - todolist_net
     depends_on:
       - todolist
 
 networks:
-  todolist:
-    driver: bridge
+  todolist_net:
+    external: true  # Indica que a rede 'todolist' já existe e será usada externamente
 
