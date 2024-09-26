@@ -57,22 +57,16 @@
         update: yes
       when: repo_directory.stat.exists
 
-    # Criar rede todolist_net
     - name: Criar rede Docker 'todolist_net'
       community.docker.docker_network:
         name: todolist_net
         driver: bridge
       ignore_errors: yes  # Ignorar erro se a rede já existir
 
-    - name: Criar variavel de ambiente temporária
-      raw: export END_POINT="{{ rds_endpoint }}"
-
-    - name: Docker compose up
-      raw: docker compose up -d
-      args:
-        chdir: /home/ubuntu/todolist-IaC/docker/
-    
-    - name: Docker compose up de novo para garantir
-      raw: docker compose up -d
+    - name: Definir variável de ambiente e executar Docker compose up
+      raw: |
+        export END_POINT="{{ rds_endpoint }}"
+        docker compose up -d
+        docker compose up -d
       args:
         chdir: /home/ubuntu/todolist-IaC/docker/
