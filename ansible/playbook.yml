@@ -62,5 +62,6 @@
       community.docker.docker_compose_v2:
         project_src: /home/ubuntu/todolist-IaaC/docker/
         state: present
+        detached: true  # Especifica que deve rodar em modo detached
       environment:
         END_POINT: "{{ rds_endpoint }}"
