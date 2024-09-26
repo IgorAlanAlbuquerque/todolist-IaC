@@ -64,10 +64,15 @@
         driver: bridge
       ignore_errors: yes  # Ignorar erro se a rede já existir
 
-    # Fazer deploy da aplicação com Docker Compose V2
-    - name: Fazer deploy da aplicação com Docker Compose V2
-      community.docker.docker_compose_v2:
-        project_src: /home/ubuntu/todolist-IaC/docker/
-        state: present
-      environment:
-          END_POINT: "{{ rds_endpoint }}"
+    - name: Criar variavel de ambiente temporária
+      raw: export END_POINT="{{ rds_endpoint }}"
+
+    - name: Docker compose up
+      raw: docker compose up -d
+      args:
+        chdir: /home/ubuntu/todolist-IaC/docker/
+    
+    - name: Docker compose up de novo para garantir
+      raw: docker compose up -d
+      args:
+        chdir: /home/ubuntu/todolist-IaC/docker/
