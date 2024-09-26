@@ -29,7 +29,7 @@ db = None  # Definir db como None para não interagir com o banco de dados
 @app.route('/')
 def home():
     todo_list = []  # Criar uma lista vazia para renderizar a interface sem dados
-    return render_template("base.html", todo_list=todo_list)
+    return render_template("base.html", todo_list=todo_list, rds_endpoint=rds_endpoint)
 
 @app.route("/add", methods=["POST"])
 def add():

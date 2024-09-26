@@ -62,6 +62,5 @@
       community.docker.docker_compose_v2:
         project_src: /home/ubuntu/todolist-IaC/docker/
         state: present
-        command: up -d
       environment:
         END_POINT: "{{ rds_endpoint }}"
