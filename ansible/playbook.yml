@@ -72,6 +72,9 @@
 
     - name: Definir variável de ambiente e executar Docker compose up
       raw: |
+        export END_POINT="{{rds_endpoint}}" && \
         cd /home/ubuntu/todolist-IaC/docker/ && \
         docker compose up -d && \
+        docker compose down && \
+        docker rmi todolist:latest && \
         docker compose up -d
